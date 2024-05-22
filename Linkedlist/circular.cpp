@@ -85,11 +85,16 @@ struct Node
 
 void print(Node *head)
 {
-    while (head)
+    if (head == NULL)
     {
-        cout << head->data << ' ';
-        head = head->next;
+        return;
     }
+    Node *p = head;
+    do
+    {
+        cout << p->data << " ";
+        p = p->next;
+    } while (p != head);
 }
 
 void insertnode(Node *&head, int val)
@@ -98,38 +103,54 @@ void insertnode(Node *&head, int val)
     if (!head)
     {
         head = newnode;
+        head->next = head;
         return;
     }
     Node *temp = head;
-    while (temp->next)
+    while (temp->next != head)
     {
         temp = temp->next;
     }
     temp->next = newnode;
+    newnode->next = head;
 }
 
-Node *insertatbegin(Node *head, int val)
+Node *insertatbegin(Node *head, int val) // tricky one as doing in O(1) time .
 {
     Node *temp = new Node(val);
-    temp->next = head;
-    return temp;
+    if (head == NULL)
+    {
+        temp->next = temp;
+        return temp;
+    }
+    else
+    {
+        temp->next = head->next;
+        head->next = temp;
+        int t = head->data;
+        head->data = temp->data;
+        temp->data = t;
+        return head;
+    }
 }
 
-Node *insertatend(Node *head, int val)
+Node *insertatend(Node *head, int val) // optimized O(1) solution
 {
     Node *temp = new Node(val);
     if (!head)
     {
+        temp->next = temp;
         return temp;
     }
-    Node *curr = head;
-    while (curr->next != NULL)
+    else
     {
-        curr = curr->next;
+        temp->next = head->next;
+        head->next = temp;
+        int t = temp->data;
+        temp->data = head->data;
+        head->data = t;
+        return temp;
     }
-    curr->next = temp;
-    temp->next = NULL;
-    return head;
 }
 
 Node *deletebegining(Node *head)
@@ -139,9 +160,19 @@ Node *deletebegining(Node *head)
     {
         return NULL;
     }
-    head = head->next;
-    free(temp);
-    return head;
+    if (head->next == head)
+    {
+        delete head;
+        return NULL;
+    }
+    else
+    {
+        head->data = head->next->data;
+        Node *temp = head->next;
+        head->next = head->next->next;
+        delete temp;
+        return head;
+    }
 }
 
 Node *deleteatend(Node *head)
@@ -150,19 +181,19 @@ Node *deleteatend(Node *head)
     {
         return NULL;
     }
-    if (head->next == NULL)
+    if (head->next == head)
     {
         delete head;
         return NULL;
     }
 
     Node *curr = head;
-    while (curr->next->next != NULL)
+    while (curr->next->next != head)
     {
         curr = curr->next;
     }
     delete (curr->next);
-    curr->next = NULL;
+    curr->next = head;
     return head;
 }
 
@@ -171,16 +202,16 @@ Node *insertatgiven(Node *head, int pos, int val)
     Node *temp = new Node(val);
     if (pos == 1)
     {
-        temp->next = head;
-        return temp;
+        return insertatbegin(head, val);
     }
     Node *curr = head;
-    for (int i = 1; i < pos - 1 && curr != NULL; i++)
+    for (int i = 1; i < pos - 1 && curr->next != head; i++)
     {
         curr = curr->next;
     }
-    if (curr == NULL)
+    if (curr->next == head && pos > 1)
     {
+        delete temp;
         return head;
     }
     temp->next = curr->next;
@@ -196,18 +227,15 @@ int search(Node *head, int x)
     {
         return -1;
     }
-    while (curr != NULL)
+    do
     {
         if (curr->data == x)
         {
             return pos;
         }
-        else
-        {
-            pos++;
-            curr = curr->next;
-        }
-    }
+        curr = curr->next;
+        pos++;
+    } while (curr != head);
     return -1;
 }
 
