@@ -188,6 +188,31 @@ Node *insertatgiven(Node *head, int pos, int val)
     return head;
 }
 
+Node *deleteatgiven(Node *head, int pos)
+{
+    if (!head)
+    {
+        return NULL;
+    }
+    if (pos == 1)
+    {
+        return deletebegining(head);
+    }
+    Node *curr = head;
+    for (int i = 1; i < pos - 1 && curr != NULL; i++)
+    {
+        curr = curr->next;
+    }
+    if (curr == NULL || curr->next == NULL)
+    {
+        return head;
+    }
+    Node *temp = curr->next;
+    curr->next = curr->next->next;
+    delete (temp);
+    return head;
+}
+
 int search(Node *head, int x)
 {
     int pos = 1;
@@ -209,6 +234,196 @@ int search(Node *head, int x)
         }
     }
     return -1;
+}
+
+void printmiddle(Node *head)
+{
+    if (head == NULL)
+    {
+        return;
+    }
+    Node *slow = head, *fast = head;
+    while (fast != NULL && fast->next != NULL)
+    {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    cout << "The middle element of this linkedlist is : " << (slow->data) << endl;
+}
+
+void printXthfromend(Node *head, int x)
+{
+    if (head == NULL)
+    {
+        return;
+    }
+    Node *fast = head, *slow = head;
+    for (int i = 1; i <= x; i++)
+    {
+        if (!fast)
+            return;
+        fast = fast->next;
+    }
+    while (fast != NULL)
+    {
+        slow = slow->next;
+        fast = fast->next;
+    }
+    cout << "The " << x << "th node from the end is : " << (slow->data) << endl;
+}
+
+Node *reversell(Node *head)
+{
+    Node *curr = head;
+    Node *prev = NULL;
+
+    while (curr != NULL)
+    {
+        Node *next = curr->next;
+        curr->next = prev;
+        prev = curr;
+        curr = next;
+    }
+    return prev;
+}
+
+Node *removeDuplicates(Node *head) // Given ll is sorted
+{
+    if (!head)
+    {
+        return NULL;
+    }
+    Node *curr = head;
+    while (curr != NULL && curr->next != NULL)
+    {
+        if (curr->data == curr->next->data)
+        {
+            Node *temp = curr->next;
+            curr->next = curr->next->next;
+            delete (temp);
+        }
+        else
+        {
+            curr = curr->next;
+        }
+    }
+    return head;
+}
+
+Node *reverseIngroups(Node *head, int k)
+{
+    if (!head || k == 1)
+        return head;
+
+    Node *dummy = new Node(0);
+    dummy->next = head;
+    Node *prev_group_end = dummy;
+    Node *curr = head;
+
+    while (curr)
+    {
+        Node *group_start = curr;
+        Node *group_end = curr;
+        for (int i = 1; i < k && group_end->next; i++)
+        {
+            group_end = group_end->next;
+        }
+        Node *next_group_start = group_end->next;
+        Node *prev = next_group_start;
+        Node *current = group_start;
+
+        while (current != next_group_start)
+        {
+            Node *next = current->next;
+            current->next = prev;
+            prev = current;
+            current = next;
+        }
+        prev_group_end->next = group_end;
+        prev_group_end = group_start;
+        curr = next_group_start;
+    }
+    head = dummy->next;
+    delete dummy;
+    return head;
+}
+
+void deletebypointer(Node *ptr)
+{
+    if (ptr == NULL)
+    {
+        return;
+    }
+
+    if (ptr->next == NULL)
+    {
+        return;
+    }
+    else
+    {
+        Node *temp = ptr->next;
+        ptr->data = temp->data;
+        ptr->next = temp->next;
+        delete (temp);
+    }
+}
+
+Node *segragate(Node *head)
+{
+    Node *ee = NULL, *es = NULL, *os = NULL, *oe = NULL;
+
+    for (Node *curr = head; curr != NULL; curr = curr->next)
+    {
+        int x = curr->data;
+        if (x % 2 == 0)
+        {
+            if (es == NULL)
+            {
+                es = curr;
+                ee = curr;
+            }
+            else
+            {
+                ee->next = curr;
+                ee = ee->next;
+            }
+        }
+        else
+        {
+            if (os == NULL)
+            {
+                os = curr;
+                oe = curr;
+            }
+            else
+            {
+                oe->next = curr;
+                oe = oe->next;
+            }
+        }
+    }
+
+    if (os == NULL || es == NULL)
+    {
+        return head;
+    }
+    else
+    {
+        ee->next = os;
+        oe->next = NULL;
+        return es;
+    }
+}
+
+Node *pairwiseswap(Node *head) // this is just swaping the data rather than  any pointer .
+{
+    Node *curr = head;
+    while (curr != NULL && curr->next != NULL)
+    {
+        swap(curr->data, curr->next->data);
+        curr = curr->next->next;
+    }
+    return head;
 }
 
 void solve()
@@ -248,10 +463,44 @@ void solve()
     head = insertatgiven(head, 3, 10);
     print(head);
 
+    cout << "\nAfer deleting 10 from pos 3 : " << endl;
+    head = deleteatgiven(head, 3);
+    print(head);
+
     cout << "\n Enter the element to be searched :" << endl;
     int x;
     cin >> x;
     cout << "Found at " << search(head, x) << endl;
+
+    printmiddle(head);
+    int y;
+    cout << "\n Enter the node number to be searched from end " << endl;
+    cin >> y;
+    printXthfromend(head, y);
+
+    cout << "\n The reversed LinkedList is : " << endl;
+    head = reversell(head);
+    print(head);
+
+    cout << "\n After removal of Duplicates: " << endl;
+    head = removeDuplicates(head);
+    print(head);
+
+    int z;
+    cout << "\nEnter the group number in which ll to be reversed : " << endl;
+    cin >> z;
+
+    cout << "\n After reversing in groups : " << endl;
+    head = reverseIngroups(head, z);
+    print(head);
+
+    cout << "\n After segragating even and the odd elements : " << endl;
+    head = segragate(head);
+    print(head);
+
+    cout << "\n After swaping pairwise : " << endl;
+    head = pairwiseswap(head);
+    print(head);
 }
 
 int main()
