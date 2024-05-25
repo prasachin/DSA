@@ -426,6 +426,35 @@ Node *pairwiseswap(Node *head) // this is just swaping the data rather than  any
     return head;
 }
 
+void ispallindrome(Node *head)
+{
+    if (!head)
+    {
+        yes();
+        return;
+    }
+    Node *slow = head, *fast = head;
+    while (fast->next && fast->next->next)
+    {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    Node *rev = reversell(slow->next);
+    Node *curr = head;
+    while (rev)
+    {
+        if (rev->data != curr->data)
+        {
+            no();
+            return;
+        }
+        rev = rev->next;
+        curr = curr->next;
+    }
+    yes();
+    return;
+}
+
 void solve()
 {
     Node *head = NULL;
@@ -501,6 +530,9 @@ void solve()
     cout << "\n After swaping pairwise : " << endl;
     head = pairwiseswap(head);
     print(head);
+
+    cout << "\n Does the linkedlist is a pallindrome : " << endl;
+    ispallindrome(head);
 }
 
 int main()
