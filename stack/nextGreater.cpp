@@ -96,9 +96,9 @@ void solve()
             r.push(s.top());
         s.push(v[i]);
     }
-    while(r.empty()==false)
+    while (r.empty() == false)
     {
-        cout<<r.top()<< " ";
+        cout << r.top() << " ";
         r.pop();
     }
     cout << endl;
