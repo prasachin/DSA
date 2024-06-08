@@ -74,8 +74,8 @@ void no() { cout << "NO\n"; }
 struct Node
 {
     int data;
-    Node *left, *right;
-
+    Node *left;
+    Node *right;
     Node(int k)
     {
         data = k;
@@ -83,35 +83,81 @@ struct Node
     }
 };
 
-int countnodes(Node *root)
+class BST
 {
-    int lh = 0, rh = 0;
-    Node *curr = root;
+public:
+    Node *root;
 
-    while (curr != NULL)
-    {
-        lh++;
-        curr = curr->left;
-    }
-    curr = root;
-    while (curr != NULL)
-    {
-        rh++;
-        curr = curr->right;
-    }
-    if (lh == rh)
-        return pow(2, lh) - 1;
+    BST() : root(NULL) {}
 
-    return (1 + countnodes(root->left) + countnodes(root->right));
+    void insert(int val)
+    {
+        root = insertNode(root, val);
+    }
+
+private:
+    Node *insertNode(Node *node, int val)
+    {
+        if (node == NULL)
+        {
+            return new Node(val);
+        }
+        if (val < node->data)
+        {
+            node->left = insertNode(node->left, val);
+        }
+        else
+        {
+            node->right = insertNode(node->right, val);
+        }
+        return node;
+    }
+};
+
+bool search(Node *root, int val)
+{
+    if (root == NULL)
+    {
+        return false;
+    }
+    if (root->data < val)
+    {
+        search(root->right, val);
+    }
+    else if (root->data > val)
+    {
+        search(root->left, val);
+    }
+    if (root->data == val)
+    {
+        return true;
+    }
+    return false;
 }
 
 void solve()
 {
-    Node *root = new Node(12);
-    root->left = new Node(1);
-    root->right = new Node(2);
+    cout << "Enter Number of the Nodes : " << endl;
+    int n;
+    cin >> n;
+    BST tree;
+    cout << "Enter The Nodes : " << endl;
+    for (int i = 0; i < n; i++)
+    {
+        int val;
+        cin >> val;
+        tree.insert(val);
+    }
 
-    cout << countnodes(root) << endl;
+    cout << "Enter the key to be searched :" << endl;
+    int val;
+    cin >> val;
+    if (search(tree.root, val))
+    {
+        cout << "Found " << endl;
+    }
+    else
+        cout << " Not found " << endl;
 }
 
 int main()

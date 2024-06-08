@@ -74,44 +74,92 @@ void no() { cout << "NO\n"; }
 struct Node
 {
     int data;
-    Node *left, *right;
+    Node *left;
+    Node *right;
 
-    Node(int k)
+    Node(int x)
     {
-        data = k;
+        data = x;
         left = right = NULL;
     }
 };
 
-int countnodes(Node *root)
+class BST
 {
-    int lh = 0, rh = 0;
-    Node *curr = root;
+public:
+    Node *root;
+    BST() : root(NULL) {}
 
-    while (curr != NULL)
+    void insert(int val)
     {
-        lh++;
-        curr = curr->left;
+        root = insertNode(root, val);
     }
-    curr = root;
-    while (curr != NULL)
-    {
-        rh++;
-        curr = curr->right;
-    }
-    if (lh == rh)
-        return pow(2, lh) - 1;
 
-    return (1 + countnodes(root->left) + countnodes(root->right));
+private:
+    Node *insertNode(Node *node, int val)
+    {
+        if (node == NULL)
+        {
+            return new Node(val);
+        }
+        if (val < node->data)
+        {
+            node->left = insertNode(node->left, val);
+        }
+        else
+        {
+            node->right = insertNode(node->right, val);
+        }
+        return node;
+    }
+};
+
+Node *getceil(Node *root, int val)
+{
+    Node *res = NULL;
+    if (root == NULL)
+    {
+        return NULL;
+    }
+    while (root != NULL)
+    {
+        if (root->data == val)
+        {
+            return root;
+        }
+        else if (root->data < val)
+        {
+            root = root->right;
+        }
+        else
+        {
+            res = root;
+            root = root->left;
+        }
+    }
+    return res;
 }
 
 void solve()
 {
-    Node *root = new Node(12);
-    root->left = new Node(1);
-    root->right = new Node(2);
+    cout << "Enter Number of the Nodes : " << endl;
+    int n;
+    cin >> n;
+    BST tree;
+    cout << "Enter The Nodes : " << endl;
+    for (int i = 0; i < n; i++)
+    {
+        int val;
+        cin >> val;
+        tree.insert(val);
+    }
 
-    cout << countnodes(root) << endl;
+    cout << "Enter the key whose ceil to be find :" << endl;
+    int val;
+    cin >> val;
+
+    Node *temp = getceil(tree.root, val);
+    cout << temp->data << endl;
 }
 
 int main()

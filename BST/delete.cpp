@@ -74,8 +74,8 @@ void no() { cout << "NO\n"; }
 struct Node
 {
     int data;
-    Node *left, *right;
-
+    Node *left;
+    Node *right;
     Node(int k)
     {
         data = k;
@@ -83,35 +83,110 @@ struct Node
     }
 };
 
-int countnodes(Node *root)
+class BST
 {
-    int lh = 0, rh = 0;
-    Node *curr = root;
+public:
+    Node *root;
 
-    while (curr != NULL)
+    BST() : root(NULL) {}
+
+    void insert(int val)
     {
-        lh++;
+        root = insertNode(root, val);
+    }
+
+private:
+    Node *insertNode(Node *node, int val)
+    {
+        if (node == NULL)
+        {
+            return new Node(val);
+        }
+        if (val < node->data)
+        {
+            node->left = insertNode(node->left, val);
+        }
+        else
+        {
+            node->right = insertNode(node->right, val);
+        }
+        return node;
+    }
+};
+
+Node *getsucc(Node *root)
+{
+    Node *curr = root->right;
+
+    while (curr != NULL && curr->left != NULL)
+    {
         curr = curr->left;
     }
-    curr = root;
-    while (curr != NULL)
-    {
-        rh++;
-        curr = curr->right;
-    }
-    if (lh == rh)
-        return pow(2, lh) - 1;
+    return curr;
+}
 
-    return (1 + countnodes(root->left) + countnodes(root->right));
+Node *deletekey(Node *root, int val) // Time complexity of this will be O(h) and it will take O(h) extra space as well .
+{
+    if (root == NULL)
+    {
+        return NULL;
+    }
+    if (root->data < val)
+    {
+        root->right = deletekey(root->right, val);
+    }
+    else if (root->data > val)
+    {
+        root->left = deletekey(root->left, val);
+    }
+    else
+    {
+        if (root->left == NULL)
+        {
+            Node *temp = root->left;
+            delete root;
+            return temp;
+        }
+        else if (root->right == NULL)
+        {
+            Node *temp = root->left;
+            delete root;
+            return temp;
+        }
+        else
+        {
+            Node *succ = getsucc(root);
+            root->data = succ->data;
+
+            root->right = deletekey(root->right, succ->data);
+        }
+    }
+    return root;
 }
 
 void solve()
 {
-    Node *root = new Node(12);
-    root->left = new Node(1);
-    root->right = new Node(2);
+    cout << "Enter Number of the Nodes : " << endl;
+    int n;
+    cin >> n;
+    BST tree;
+    cout << "Enter The Nodes : " << endl;
+    for (int i = 0; i < n; i++)
+    {
+        int val;
+        cin >> val;
+        tree.insert(val);
+    }
 
-    cout << countnodes(root) << endl;
+    cout << "Enter the key to be deleted :" << endl;
+    int val;
+    cin >> val;
+    if (deletekey(tree.root, val))
+    {
+        cout << "deleted " << endl;
+    }
+    else
+        cout << " Not found " << endl;
 }
 
 int main()
