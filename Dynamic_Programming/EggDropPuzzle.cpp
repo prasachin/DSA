@@ -82,6 +82,7 @@ void solve()
         dp[1][i] = 1;
         dp[0][i] = 0;
     }
+    f(j,1,f+1)dp[j][1]=j;
     f(i, 2, f + 1)
     {
         f(j, 2, e + 1)
