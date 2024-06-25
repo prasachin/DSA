@@ -85,7 +85,47 @@ void buildTree(vector<int> &segTree, int arr[], int start, int end, int node)
     segTree[node] = segTree[2 * node + 1] + segTree[2 * node + 2];
 }
 
-void solve() // very useful to get sum in the range of indices .
+// Function to get the sum of a range
+int getSum(vector<int> &segTree, int start, int end, int l, int r, int node)
+{
+    // If range is outside the bounds
+    if (r < start || l > end)
+    {
+        return 0;
+    }
+    // If range is completely within the bounds
+    if (l <= start && r >= end)
+    {
+        return segTree[node];
+    }
+    // Partial overlap
+    int mid = (start + end) / 2;
+    int leftSum = getSum(segTree, start, mid, l, r, 2 * node + 1);
+    int rightSum = getSum(segTree, mid + 1, end, l, r, 2 * node + 2);
+    return leftSum + rightSum;
+}
+
+// Function to update the segment tree
+void update(vector<int> &segTree, int start, int end, int index, int value, int node)
+{
+    if (start == end)
+    {
+        segTree[node] = value;
+        return;
+    }
+    int mid = (start + end) / 2;
+    if (index <= mid)
+    {
+        update(segTree, start, mid, index, value, 2 * node + 1);
+    }
+    else
+    {
+        update(segTree, mid + 1, end, index, value, 2 * node + 2);
+    }
+    segTree[node] = segTree[2 * node + 1] + segTree[2 * node + 2];
+}
+
+void solve()
 {
     int n;
     cin >> n;
@@ -101,6 +141,24 @@ void solve() // very useful to get sum in the range of indices .
 
     // Output the segment tree
     cout << "Segment Tree: ";
+    for (int i = 0; i < segTreeSize; i++)
+    {
+        cout << segTree[i] << " ";
+    }
+    cout << endl;
+
+    // Example usage of getSum and update
+    int l, r;
+    cout << "Enter range (l, r) to get sum: " << endl;
+    cin >> l >> r;
+    cout << "Sum of elements in range (" << l << ", " << r << ") is: " << getSum(segTree, 0, n - 1, l, r, 0) << endl;
+
+    int index, value;
+    cout << "Enter index and value to update: " << endl;
+    cin >> index >> value;
+    update(segTree, 0, n - 1, index, value, 0);
+
+    cout << "Segment Tree after update: " << endl;
     for (int i = 0; i < segTreeSize; i++)
     {
         cout << segTree[i] << " ";
